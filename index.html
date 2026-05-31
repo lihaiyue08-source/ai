@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 工具导航 - 发现最好的 AI 工具</title>
+    <style>
+        /* ========== Reset & Base ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ========== Scrollbar ========== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #12121a; }
+        ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3a3a4a; }
+
+        /* ========== Header ========== */
+        header {
+            background: linear-gradient(135deg, #0d0d14 0%, #14141f 50%, #0d0d14 100%);
+            border-bottom: 1px solid #1e1e2e;
+            padding: 50px 20px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(59,130,246,0.06) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        header h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+        header p {
+            color: #888;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        /* ========== Ad Banner (Top) ========== */
+        .ad-top {
+            max-width: 1100px;
+            margin: 20px auto 0;
+            padding: 0 20px;
+        }
+        .ad-placeholder {
+            background: linear-gradient(135deg, #14141f, #1a1a2e);
+            border: 1px dashed #2a2a4a;
+            border-radius: 12px;
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #555;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .ad-placeholder:hover {
+            border-color: #3a3a6a;
+            background: #18182a;
+            color: #777;
+        }
+        .ad-placeholder .ad-badge {
+            background: #f59e0b;
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== Search Bar ========== */
+        .search-section {
+            max-width: 700px;
+            margin: 30px auto 0;
+            padding: 0 20px;
+            position: relative;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #14141f;
+            border: 1px solid #1e1e2e;
+            border-radius: 14px;
+            padding: 0 20px;
+            transition: all 0.3s;
+        }
+        .search-box:focus-within {
+            border-color: #3b3b6a;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        .search-box svg { flex-shrink: 0; }
+        .search-box input {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 16px 14px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            outline: none;
+        }
+        .search-box input::placeholder { color: #555; }
+
+        /* ========== Category Tabs ========== */
+        .category-bar {
+            max-width: 1100px;
+            margin: 28px auto 0;
+            padding: 0 20px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .category-bar::-webkit-scrollbar { height: 3px; }
+        .category-bar::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 2px; }
+        .category-btn {
+            white-space: nowrap;
+            padding: 8px 18px;
+            border-radius: 10px;
+            border: 1px solid #1e1e2e;
+            background: #12121a;
+            color: #888;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-weight: 500;
+        }
+        .category-btn:hover {
+            background: #1a1a2a;
+            color: #ccc;
+        }
+        .category-btn.active {
+            background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2));
+            border-color: #3b3b6a;
+            color: #a5b4fc;
+        }
+
+        /* ========== Tool Grid ========== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        /* ========== Tool Card ========== */
+        .tool-card {
+            background: #12121a;
+            border: 1px solid #1a1a2a;
+            border-radius: 14px;
+            padding: 22px 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .tool-card:hover {
+            border-color: #2a2a4e;
+            background: #16161f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+        .tool-card .icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 14px;
+            flex-shrink: 0;
+        }
+        .tool-card .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .tool-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #eee;
+        }
+        .tool-card .tag {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .tag.free { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .tag.paid { background: rgba(250,204,21,0.15); color: #facc15; }
+        .tag.freemium { background: rgba(96,165,250,0.15); color: #60a5fa; }
+        .tool-card p {
+            color: #777;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            flex: 1;
+            margin: 8px 0 14px;
+        }
+        .tool-card .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid #1a1a2a;
+        }
+        .tool-card .card-footer .category-label {
+            font-size: 0.75rem;
+            color: #555;
+        }
+        .tool-card .card-footer .visit-link {
+            font-size: 0.85rem;
+            color: #60a5fa;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .tool-card .card-footer .visit-link:hover { color: #93bbfc; }
+
+        /* ========== Ad Card (in grid) ========== */
+        .tool-card.ad-card {
+            background: linear-gradient(135deg, #0f0f1a, #14142a);
+            border-style: dashed;
+            border-color: #2a2a4a;
+            cursor: default;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 200px;
+        }
+        .tool-card.ad-card:hover {
+            transform: none;
+            border-color: #3a3a6a;
+            background: linear-gradient(135deg, #121220, #181830);
+        }
+        .tool-card.ad-card .ad-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+        }
+        .tool-card.ad-card .ad-inner .ad-badge-lg {
+            background: rgba(245,158,11,0.15);
+            color: #f59e0b;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+        .tool-card.ad-card .ad-inner p { margin: 0; font-size: 0.85rem; color: #555; }
+
+        /* ========== Footer ========== */
+        footer {
+            border-top: 1px solid #1a1a2a;
+            padding: 30px 20px;
+            text-align: center;
+            color: #555;
+            font-size: 0.85rem;
+        }
+        footer a { color: #60a5fa; }
+        footer a:hover { text-decoration: underline; }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 640px) {
+            header h1 { font-size: 1.8rem; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .category-bar { gap: 6px; }
+            .category-btn { padding: 6px 14px; font-size: 0.82rem; }
+        }
+
+        /* ========== Empty State ========== */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #555;
+        }
+        .empty-state svg { margin-bottom: 16px; opacity: 0.4; }
+        .empty-state p { font-size: 1rem; }
+
+        /* ========== Toast ========== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1e1e2e;
+            border: 1px solid #2a2a4a;
+            padding: 12px 24px;
+            border-radius: 12px;
+            color: #ccc;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            z-index: 999;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<header>
+    <h1>🤖 AI 工具导航</h1>
+    <p>发现 &middot; 精选 &middot; 最热门的 AI 工具</p>
+
+    <!-- Ad Banner (Top) -->
+    <div class="ad-top">
+        <div class="ad-placeholder" onclick="showToast('广告位招租 — 联系：ad@example.com')">
+            <span class="ad-badge">AD</span>
+            <span>这里是广告位 — 800 × 100</span>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-section">
+        <div class="search-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" id="searchInput" placeholder="搜索 AI 工具..." oninput="filterTools()" />
+        </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-bar" id="categoryBar"></div>
+</header>
+
+<!-- ==================== GRID ==================== -->
+<div class="container">
+    <div class="tools-grid" id="toolsGrid">
+        <!-- cards injected by JS -->
+    </div>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+    <p>© 2026 AI 工具导航 &middot; 发现最好的 AI 工具 &middot; <a href="javascript:void(0)" onclick="showToast('📧 联系：hello@aitoolsnav.com')">联系我们</a></p>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ============================================================
+    //  DATA
+    // ============================================================
+    const categories = [
+        { id: 'all',      label: '🔥 全部',      icon: '' },
+        { id: 'chat',     label: '💬 对话聊天',  icon: '💬' },
+        { id: 'image',    label: '🎨 图像生成',  icon: '🎨' },
+        { id: 'video',    label: '🎬 视频制作',  icon: '🎬' },
+        { id: 'code',     label: '💻 编程开发',  icon: '💻' },
+        { id: 'writing',  label: '✍️  写作助手',  icon: '✍️ ' },
+        { id: 'audio',    label: '🎵 音频音乐',  icon: '🎵' },
+        { id: 'productivity', label: '⚡ 效率工具', icon: '⚡' },
+        { id: 'design',   label: '🖌️  设计创意', icon: '🖌️ ' },
+        { id: 'data',     label: '📊 数据分析',  icon: '📊' },
+        { id: 'search',   label: '🔍 搜索聚合',  icon: '🔍' },
+    ];
+
+    const tools = [
+        // ---- 对话聊天 ----
+        { name: 'ChatGPT',         desc: 'OpenAI 推出的旗舰对话 AI，支持文本、图像理解、代码执行等。',        cat: 'chat',  tag: 'freemium', color: '#10a37f', link: 'https://chat.openai.com' },
+        { name: 'Claude',          desc: 'Anthropic 出品的安全对话 AI，长上下文支持、擅长深度分析。',      cat: 'chat',  tag: 'freemium', color: '#d97706', link: 'https://claude.ai' },
+        { name: 'Gemini',          desc: 'Google 的多模态 AI 助手，与谷歌生态深度集成。',                     cat: 'chat',  tag: 'free',    color: '#4285f4', link: 'https://gemini.google.com' },
+        { name: 'DeepSeek',        desc: '深度求索推出的强大中文 AI，推理能力突出，性价比极高。',             cat: 'chat',  tag: 'free',    color: '#4f46e5', link: 'https://chat.deepseek.com' },
+        { name: 'Kimi',            desc: '月之暗面出品，超长上下文、支持联网搜索和文件处理。',      cat: 'chat',  tag: 'free',    color: '#0ea5e9', link: 'https://kimi.moonshot.cn' },
+        { name: '豆包',            desc: '字节跳动推出的 AI 助手，支持多轮对话和内容创作。',      cat: 'chat',  tag: 'free',    color: '#ef4444', link: 'https://www.doubao.com' },
+        { name: '通义千问',        desc: '阿里云出品的大语言模型，集成了多种效率工具和插件。',      cat: 'chat',  tag: 'free',    color: '#8b5cf6', link: 'https://tongyi.aliyun.com' },
+        { name: '文心一言',        desc: '百度出品的 AI 对话产品，中文理解能力强。',      cat: 'chat',  tag: 'free',    color: '#2563eb', link: 'https://yiyan.baidu.com' },
+        // ---- 图像生成 ----
+        { name: 'Midjourney',      desc: '顶级 AI 图像生成工具，艺术风格出众，适合创意设计。',                cat: 'image', tag: 'paid',   color: '#000',  link: 'https://midjourney.com' },
+        { name: 'DALL·E 3',        desc: 'OpenAI 的图像生成模型，提示词理解精准。',      cat: 'image', tag: 'paid',   color: '#10a37f', link: 'https://openai.com/dall-e-3' },
+        { name: 'Stable Diffusion',desc: '开源图像生成模型，可本地部署，高度可定制。',                        cat: 'image', tag: 'free',   color: '#9b59b6', link: 'https://stability.ai' },
+        { name: 'Firefly',         desc: 'Adobe 出品的创意生成 AI，与 Photoshop 集成。',                      cat: 'image', tag: 'paid',   color: '#eb3c00', link: 'https://firefly.adobe.com' },
+        { name: 'Leonardo AI',     desc: '强大的 AI 图像与游戏素材生成平台。',                                cat: 'image', tag: 'freemium',color: '#22c55e', link: 'https://leonardo.ai' },
+        { name: '可灵 AI',         desc: '快手出品的 AI 图像与视频生成工具。',                                cat: 'image', tag: 'free',   color: '#ff6b6b', link: 'https://kling.kuaishou.com' },
+        // ---- 视频制作 ----
+        { name: 'Runway Gen-3',    desc: '专业级 AI 视频生成与编辑平台，支持文本/图片生成视频。',             cat: 'video', tag: 'paid',   color: '#000',  link: 'https://runwayml.com' },
+        { name: 'Pika Labs',       desc: '简单易用的 AI 视频生成工具，特效丰富。',                            cat: 'video', tag: 'freemium',color: '#22d3ee', link: 'https://pika.art' },
+        { name: 'Sora',            desc: 'OpenAI 推出的高保真视频生成模型，画质极为真实。',      cat: 'video', tag: 'paid',   color: '#10a37f', link: 'https://openai.com/sora' },
+        { name: '剪映',            desc: '字节出品的视频剪辑工具，内置大量 AI 功能。',                        cat: 'video', tag: 'free',   color: '#ef4444', link: 'https://jianying.com' },
+        // ---- 编程开发 ----
+        { name: 'GitHub Copilot',  desc: 'AI 代码补全助手，深度集成 VS Code、JetBrains 等 IDE。',            cat: 'code',  tag: 'paid',   color: '#000',  link: 'https://github.com/features/copilot' },
+        { name: 'Cursor',          desc: 'AI-First 代码编辑器，内置强大的聊天和代码生成功能。',               cat: 'code',  tag: 'freemium',color: '#6ee7b7', link: 'https://cursor.sh' },
+        { name: 'Windsurf',        desc: '下一代 AI IDE，智能代码理解与自动补全。',                           cat: 'code',  tag: 'freemium',color: '#2563eb', link: 'https://codeium.com/windsurf' },
+        { name: '通义灵码',        desc: '阿里出品的中文 AI 编程助手，支持多种编程语言。',      cat: 'code',  tag: 'free',   color: '#8b5cf6', link: 'https://tongyi.aliyun.com/lingma' },
+        { name: 'Cline',           desc: '开源 AI 编码助手，支持 Claude/GPT 等多模型。',                      cat: 'code',  tag: 'free',   color: '#f97316', link: 'https://github.com/cline/cline' },
+        // ---- 写作助手 ----
+        { name: 'Notion AI',       desc: 'Notion 内置 AI，辅助写作、总结、翻译和头脑风暴。',                  cat: 'writing',tag: 'paid',   color: '#000',  link: 'https://notion.so' },
+        { name: 'Grammarly',       desc: '英文写作润色工具，支持语法检查、风格优化。',                        cat: 'writing',tag: 'freemium',color: '#22c55e', link: 'https://grammarly.com' },
+        { name: 'Jasper',          desc: 'AI 内容创作平台，适合营销文案、博客等场景。',                       cat: 'writing',tag: 'paid',   color: '#6366f1', link: 'https://jasper.ai' },
+        { name: '秘塔写作猫',      desc: '中文 AI 写作辅助，支持多类型文本生成与优化。',                      cat: 'writing',tag: 'free',   color: '#f97316', link: 'https://xiezuocat.com' },
+        // ---- 音频音乐 ----
+        { name: 'Suno AI',         desc: 'AI 音乐生成，输入歌词和风格即可生成完整歌曲。',                     cat: 'audio', tag: 'freemium',color: '#a855f7', link: 'https://suno.com' },
+        { name: 'ElevenLabs',      desc: '高质量的 AI 语音合成，支持多种语言和声音克隆。',                    cat: 'audio', tag: 'freemium',color: '#22d3ee', link: 'https://elevenlabs.io' },
+        // ---- 效率工具 ----
+        { name: 'Perplexity',      desc: 'AI 搜索引擎，结合大模型与实时网络信息，答案附来源。',               cat: 'productivity',tag: 'freemium',color: '#6366f1', link: 'https://perplexity.ai' },
+        { name: 'Notion',          desc: '全能笔记与项目管理工具，内置 AI 辅助功能。',                        cat: 'productivity',tag: 'freemium',color: '#000',  link: 'https://notion.so' },
+        { name: '飞书妙记',        desc: '飞书内置 AI，自动生成会议纪要、摘要和待办事项。',                   cat: 'productivity',tag: 'free', color: '#2563eb', link: 'https://feishu.cn' },
+        { name: 'Napkin',          desc: 'AI 驱动的思维导图和白板工具，帮你把想法可视化。',                   cat: 'productivity',tag: 'freemium',color: '#f59e0b', link: 'https://napkin.ai' },
+        // ---- 设计创意 ----
+        { name: 'Canva AI',        desc: '在线设计平台，内置 AI 生成设计、图片编辑和文案辅助。',              cat: 'design', tag: 'freemium',color: '#22c55e', link: 'https://canva.com' },
+        { name: 'Figma AI',        desc: 'Figma 内置 AI 功能，支持设计生成、图层自动命名等。',                cat: 'design', tag: 'paid',   color: '#a855f7', link: 'https://figma.com' },
+        { name: 'Uizard',          desc: 'AI 驱动的 UI/UX 设计工具，草图秒变高保真原型。',                    cat: 'design', tag: 'freemium',color: '#3b82f6', link: 'https://uizard.io' },
+        // ---- 数据分析 ----
+        { name: 'Julius AI',       desc: 'AI 数据分析助手，上传数据即可生成图表和分析报告。',                 cat: 'data',   tag: 'freemium',color: '#10b981', link: 'https://julius.ai' },
+        { name: 'Tableau AI',      desc: 'Tableau 内置 AI 分析，自动发现数据趋势和洞察。',                    cat: 'data',   tag: 'paid',   color: '#2563eb', link: 'https://tableau.com' },
+        // ---- 搜索聚合 ----
+        { name: '秘塔 AI 搜索',    desc: '新一代 AI 搜索引擎，结果结构化、来源清晰。',                        cat: 'search', tag: 'free',   color: '#f97316', link: 'https://metaso.cn' },
+        { name: '天工 AI 搜索',    desc: '昆仑万维出品，整合搜索、对话和文档处理功能。',                      cat: 'search', tag: 'free',   color: '#4f46e5', link: 'https://www.tiangong.cn' },
+    ];
+
+    // ============================================================
+    //  STATE
+    // ============================================================
+    let activeCategory = 'all';
+    let searchQuery = '';
+
+    // ============================================================
+    //  RENDER
+    // ============================================================
+    function renderCategoryTabs() {
+        const bar = document.getElementById('categoryBar');
+        bar.innerHTML = categories.map(c =>
+            `<button class="category-btn${activeCategory === c.id ? ' active' : ''}"
+                     onclick="setCategory('${c.id}')">${c.label}</button>`
+        ).join('');
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('toolsGrid');
+        const q = searchQuery.toLowerCase().trim();
+
+        let filtered = tools.filter(t => {
+            if (activeCategory !== 'all' && t.cat !== activeCategory) return false;
+            if (q) {
+                const matchName = t.name.toLowerCase().includes(q);
+                const matchDesc = t.desc.toLowerCase().includes(q);
+                if (!matchName && !matchDesc) return false;
+            }
+            return true;
+        });
+
+        // Insert ad cards: after every 6 items (if >= 6 results)
+        const AD_INTERVAL = 6;
+        const withAds = [];
+        for (let i = 0; i < filtered.length; i++) {
+            withAds.push(filtered[i]);
+            if ((i + 1) % AD_INTERVAL === 0 && i < filtered.length - 1) {
+                withAds.push({ _ad: true, id: `ad-${i}` });
+            }
+        }
+
+        if (withAds.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    <p>没有找到匹配的工具，试试其他关键词吧</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = withAds.map(item => {
+            if (item._ad) {
+                return `
+                    <div class="tool-card ad-card" onclick="showToast('📢 广告位招租 — 联系：ad@example.com')">
+                        <div class="ad-inner">
+                            <span class="ad-badge-lg">📢 广告</span>
+                            <p>在这里推广你的 AI 产品<br/>触达上千名 AI 爱好者</p>
+                        </div>
+                    </div>
+                `;
+            }
+            const tagClass = item.tag === 'free' ? 'free' : item.tag === 'paid' ? 'paid' : 'freemium';
+            const tagLabel = item.tag === 'free' ? '免费' : item.tag === 'paid' ? '付费' : '免费增值';
+            return `
+                <div class="tool-card" onclick="window.open('${item.link}','_blank')">
+                    <div class="card-header">
+                        <div class="icon-wrap" style="background:${item.color}22; color:${item.color}">
+                            ${categories.find(c => c.id === item.cat)?.icon || '🤖'}
+                        </div>
+                        <span class="tag ${tagClass}">${tagLabel}</span>
+                    </div>
+                    <h3>${item.name}</h3>
+                    <p>${item.desc}</p>
+                    <div class="card-footer">
+                        <span class="category-label">${categories.find(c => c.id === item.cat)?.label || item.cat}</span>
+                        <span class="visit-link">访问 →</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ============================================================
+    //  ACTIONS
+    // ============================================================
+    function setCategory(id) {
+        activeCategory = id;
+        renderCategoryTabs();
+        renderGrid();
+    }
+
+    function filterTools() {
+        searchQuery = document.getElementById('searchInput').value;
+        renderGrid();
+    }
+
+    function showToast(message) {
+        const toastEl = document.getElementById('toast');
+        toastEl.textContent = message;
+        toastEl.classList.add('show');
+        setTimeout(() => {
+            toastEl.classList.remove('show');
+        }, 3000);
+    }
+
+    // ============================================================
+    //  INIT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        renderCategoryTabs();
+        renderGrid();
+    });
+</script>
+
+</body>
+</html>
